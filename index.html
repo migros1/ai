@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Sohbet Asistanı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #ecf0f1;
+            --user-message-color: #e8f4f8;
+            --ai-message-color: #f0f0f0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .chat-wrapper {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #chat-container {
+            height: 500px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .message {
+            max-width: 80%;
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 15px;
+            clear: both;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: var(--user-message-color);
+            color: #333;
+            float: right;
+            text-align: right;
+        }
+        .ai-message {
+            background-color: var(--ai-message-color);
+            color: #333;
+            float: left;
+            text-align: left;
+        }
+        .code-block {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .input-area {
+            display: flex;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+        #send-button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #send-button:hover {
+            background-color: #2980b9;
+        }
+        #loading {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+        }
+        .clear-history {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            AI Sohbet Asistanı
+            <button class="clear-history">Geçmişi Temizle</button>
+        </div>
+        <div id="chat-container"></div>
+        <div id="loading" style="display:none;">Düşünüyor...</div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Mesajınızı yazın...">
+            <button id="send-button">Gönder</button>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const loadingIndicator = document.getElementById('loading');
+        const clearHistoryButton = document.querySelector('.clear-history');
+
+        // Sohbet geçmişini localStorage'dan al
+        let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
+
+        // Sayfa yüklendiğinde geçmişi görüntüle
+        function renderChatHistory() {
+            chatContainer.innerHTML = '';
+            chatHistory.forEach(message => {
+                appendMessage(message.text, message.type);
+            });
+        }
+        renderChatHistory();
+
+        // Mesaj ekleme ve geçmiş kaydetme fonksiyonu
+        function appendMessage(message, className, isCode = false) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', className);
+            
+            if (isCode) {
+                const codeBlock = document.createElement('div');
+                codeBlock.classList.add('code-block');
+                codeBlock.textContent = message;
+                messageElement.appendChild(codeBlock);
+            } else {
+                messageElement.textContent = message;
+            }
+            
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Geçmişe ekle ve localStorage'da sakla
+            chatHistory.push({ text: message, type: className });
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        }
+
+        // API çağrısı için fonksiyon
+        async function sendMessage() {
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            // Kullanıcı mesajını göster
+            appendMessage(userMessage, 'user-message');
+            
+            // Yükleme göstergesini aç
+            loadingIndicator.style.display = 'block';
+            sendButton.disabled = true;
+
+            try {
+                // API çağrısı
+                const apiUrl = new URL('https://darkness.ashlynn.workers.dev/chat/');
+                apiUrl.searchParams.set('prompt', userMessage);
+                apiUrl.searchParams.set('model', 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo');
+
+                const response = await fetch(apiUrl.toString(), {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+                const aiResponse = data.response || 'Yanıt alınamadı.';
+
+                // Yükleme göstergesini kapat
+                loadingIndicator.style.display = 'none';
+                sendButton.disabled = false;
+
+                // Kod bloğu kontrolü
+                const codeRegex = /```(\w+)?\n([\s\S]*?)```/g;
+                let match;
+                let processedResponse = aiResponse;
+                const codeBlocks = [];
+
+                while ((match = codeRegex.exec(aiResponse)) !== null) {
+                    const language = match[1] || 'plain';
+                    const code = match[2];
+                    codeBlocks.push({ language, code });
+                    processedResponse = processedResponse.replace(match[0], '');
+                }
+
+                // Ana yanıtı göster
+                if (processedResponse.trim()) {
+                    appendMessage(processedResponse.trim(), 'ai-message');
+                }
+
+                // Kod bloklarını belirgin şekilde göster
+                codeBlocks.forEach(block => {
+                    appendMessage(block.code, 'ai-message', true);
+                });
+
+            } catch (error) {
+                // Yükleme göstergesini kapat
+                loadingIndicator.style.display = 'none';
+                sendButton.disabled = false;
+                
+                // Hata mesajını göster
+                appendMessage('Bir hata oluştu: ' + error.message, 'ai-message');
+            }
+
+            // Input'u temizle
+            messageInput.value = '';
+        }
+
+        // Gönder butonuna tıklama event listener'ı
+        sendButton.addEventListener('click', sendMessage);
+
+        // Enter tuşuna basınca da mesaj gönderebilme
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Geçmişi temizleme
+        clearHistoryButton.addEventListener('click', () => {
+            chatHistory = [];
+            localStorage.removeItem('chatHistory');
+            chatContainer.innerHTML = '';
+        });
+    </script>
+</body>
+</html>
