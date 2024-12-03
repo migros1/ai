@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('API isteği başarısız oldu');
             }
             const data = await response.json();
-
-            // Yanıtın içinde farklı bir alan kontrolü yapın
-            const reply = data.reply || data.message || data.response || 'Yanıt alınamadı. Lütfen daha sonra tekrar deneyin.';
+            
+            // Doğru alanı kullanarak yanıtı göster
+            const reply = data.response || 'Yanıt alınamadı. Lütfen daha sonra tekrar deneyin.';
             appendMessage('Bot', reply);
         } catch (error) {
             console.error('API hatası:', error);
