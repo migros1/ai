@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Uygulama yüklendi');
 
@@ -15,11 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('API isteği başarısız oldu');
             }
             const data = await response.json();
-            if (data && data.reply) {
-                appendMessage('Bot', data.reply);
-            } else {
-                appendMessage('Bot', 'Yanıt alınamadı. Lütfen daha sonra tekrar deneyin.');
-            }
+
+            // Yanıtın içinde farklı bir alan kontrolü yapın
+            const reply = data.reply || data.message || data.response || 'Yanıt alınamadı. Lütfen daha sonra tekrar deneyin.';
+            appendMessage('Bot', reply);
         } catch (error) {
             console.error('API hatası:', error);
             appendMessage('Bot', 'Bir hata oluştu. Lütfen tekrar deneyin.');
