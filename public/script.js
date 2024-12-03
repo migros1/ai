@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Uygulama yüklendi');
 
@@ -14,7 +15,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('API isteği başarısız oldu');
             }
             const data = await response.json();
-            appendMessage('Bot', data.reply || 'Yanıt alınamadı');
+            if (data && data.reply) {
+                appendMessage('Bot', data.reply);
+            } else {
+                appendMessage('Bot', 'Yanıt alınamadı. Lütfen daha sonra tekrar deneyin.');
+            }
         } catch (error) {
             console.error('API hatası:', error);
             appendMessage('Bot', 'Bir hata oluştu. Lütfen tekrar deneyin.');
