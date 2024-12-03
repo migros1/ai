@@ -14,7 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('API isteği başarısız oldu');
             }
             const data = await response.json();
-            console.log('API yanıtı:', data); // Yanıtı konsola yazdırın
+            // Yanıtı sohbet penceresine yazdırarak kontrol edin
+            appendMessage('Bot', 'API yanıtı: ' + JSON.stringify(data));
+
+            // Yanıtta 'reply' alanı varsa, bu alanı göster
             if (data && data.reply) {
                 appendMessage('Bot', data.reply);
             } else {
