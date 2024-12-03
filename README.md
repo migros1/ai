@@ -1,18 +1,21 @@
-# Sunucusuz API Projesi
+# Sunucusuz ChatGPT Projesi
 
-Bu proje, sunucusuz mimari ve API tabanlı bir web uygulamasıdır. Kullanıcı yönetimi, blog gönderileri ve sohbet özelliklerini içerir.
-
-## Kurulum
-
-1. Depoyu klonlayın.
-2. Gerekli bağımlılıkları yükleyin: `npm install`
-
-## Kullanım
-
-- Uygulamayı başlatmak için: `npm start`
+Bu proje, tamamen statik dosyalar kullanarak bir ChatGPT tabanlı sohbet uygulamasıdır. Kullanıcılar, API üzerinden gerçek zamanlı yanıtlar alabilirler.
 
 ## Özellikler
 
-- Kullanıcı kaydı ve girişi
-- Blog gönderisi oluşturma ve listeleme
-- Gerçek zamanlı sohbet özelliği
+- Gerçek zamanlı sohbet
+- Responsive ve kullanıcı dostu tasarım
+- Mesaj geçmişi
+- Yan menü ile kolay navigasyon
+- Animasyonlar ve etkileşimli efektler
+
+## Dağıtım
+
+Bu proje, statik dosya barındırma hizmetleri (örneğin, GitHub Pages) üzerinde çalışacak şekilde tasarlanmıştır.
+
+## Kullanım
+
+1. Projeyi klonlayın veya indirin.
+2. Dosyaları bir web sunucusuna yükleyin veya yerel olarak çalıştırmak için bir statik sunucu kullanın (örneğin, `npx http-server`).
+3. Tarayıcınızda `index.html` dosyasını açarak projeyi görüntüleyin.
