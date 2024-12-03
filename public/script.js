@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Uygulama yüklendi');
 
@@ -15,7 +16,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const data = await response.json();
             
-            // Doğru alanı kullanarak yanıtı göster
+            // Yanıtı kontrol et
+            console.log('API yanıtı:', data); // Konsolda yanıtı kontrol edin
+
+            // Yanıtın response alanını kullan
             const reply = data.response || 'Yanıt alınamadı. Lütfen daha sonra tekrar deneyin.';
             appendMessage('Bot', reply);
         } catch (error) {
