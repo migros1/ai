@@ -32,12 +32,18 @@ body {
 
 .code-container {
     position: relative;
-    background-color: #2e2e2e;
+    background-color: #2e2e2e; /* Kod bloğu arka plan rengi */
     border: 1px solid #444;
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
     overflow: auto;
+}
+
+.code-container pre {
+    color: #00ff00; /* Kod yazı rengi yeşil */
+    white-space: pre-wrap; /* Satır sonu yap */
+    word-wrap: break-word; /* Kelimeleri taşırma */
 }
 
 .copy-code {
