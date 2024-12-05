@@ -11,9 +11,19 @@ let conversationHistory = [];
 function appendMessage(message, type) {
     const messageElement = document.createElement('div');
     messageElement.className = `chat-message ${type}-message`;
-    messageElement.innerHTML = message; // innerHTML kullanarak kodu ekliyoruz
     chatBox.appendChild(messageElement);
     chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+
+    // Yazma animasyonu
+    let index = 0;
+    const interval = setInterval(() => {
+        if (index < message.length) {
+            messageElement.innerHTML += message.charAt(index);
+            index++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 25); // Yazma hızı (milisaniye)
 }
 
 // Kod bloğu oluştur
