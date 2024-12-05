@@ -30,6 +30,9 @@ function createCodeBlock(code) {
     copyBtn.onclick = function() {
         navigator.clipboard.writeText(code).then(() => {
             alert('Kod kopyalandı!');
+        }).catch(err => {
+            console.error('Kopyalama hatası:', err);
+            alert('Kodu kopyalarken bir hata oluştu!');
         });
     };
 

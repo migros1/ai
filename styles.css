@@ -44,6 +44,7 @@ body {
     color: #00ff00; /* Kod yazı rengi yeşil */
     white-space: pre-wrap; /* Satır sonu yap */
     word-wrap: break-word; /* Kelimeleri taşırma */
+    margin: 0; /* Pre etiketi için varsayılan margin'i kaldır */
 }
 
 .copy-code {
