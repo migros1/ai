@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <!-- Meta Tags for SEO -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilim - Mostral AI Chat</title>
+    <meta name="description" content="Mostral AI Chat Profil Sayfası.">
+    <meta name="keywords" content="Profil, Mostral AI, Yapay Zeka Chat">
+    <meta name="author" content="Mostral AI">
+    <meta property="og:title" content="Profilim - Mostral AI Chat">
+    <meta property="og:description" content="Mostral AI Chat Profil Sayfası.">
+    <meta property="og:url" content="https://t.me/mostral_ai">
+    <meta property="og:type" content="website">
+    <!-- Google Sign-In -->
+    <meta name="google-signin-client_id" content="AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM.apps.googleusercontent.com">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Prism.js for Syntax Highlighting (if needed) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- CSS Styles -->
+    <style>
+        /* Karanlık Tema Genel Stil */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #bb86fc;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-in-out;
+        }
+        /* Profile Container */
+        .profile-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+        /* Cover Photo */
+        .cover-photo {
+            position: relative;
+        }
+        .cover-photo img {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        /* Profile Picture */
+        .profile-picture {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-picture img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px solid #bb86fc;
+            object-fit: cover;
+        }
+        /* Upload Buttons */
+        .upload-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .upload-buttons button {
+            padding: 10px 20px;
+            background-color: #bb86fc;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .upload-buttons button:hover {
+            background-color: #9b5de5;
+            transform: scale(1.05);
+        }
+        /* Update Count */
+        #updateCount {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        /* Firebase Auth Buttons */
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .auth-buttons button {
+            padding: 10px 20px;
+            background-color: #4285F4;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .auth-buttons button:hover {
+            background-color: #357ae8;
+            transform: scale(1.05);
+        }
+        /* Footer */
+        footer {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #bb86fc;
+            transition: color 0.3s;
+        }
+        footer:hover {
+            color: #fff;
+        }
+        /* Responsive Design */
+        @media screen and (max-width: 600px) {
+            .profile-container {
+                padding: 10px;
+            }
+            .cover-photo img {
+                height: 150px;
+            }
+            .profile-picture img {
+                width: 100px;
+                height: 100px;
+            }
+            .upload-buttons button, .auth-buttons button {
+                width: 100%;
+            }
+        }
+        /* Animasyonlar */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Profilim</h1>
+    <div class="profile-container">
+        <!-- Cover Photo -->
+        <div class="cover-photo">
+            <img id="coverPhoto" src="default_cover.jpg" alt="Kapak Fotoğrafı">
+            <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadCoverPhoto(event)" />
+            <button onclick="triggerCoverUpload()"><i class="fas fa-upload"></i> Kapak Fotoğrafı Yükle</button>
+        </div>
+        <!-- Profile Picture -->
+        <div class="profile-picture">
+            <img id="profilePicture" src="default_profile.png" alt="Profil Fotoğrafı">
+            <input type="file" id="profileInput" accept="image/*" style="display:none" onchange="uploadProfilePicture(event)" />
+            <button onclick="triggerProfileUpload()"><i class="fas fa-upload"></i> Profil Fotoğrafı Yükle</button>
+        </div>
+        <!-- Update Count -->
+        <div id="updateCount">
+            Güncel Profili Değiştirme Hakkı: <span id="remainingUpdates">3</span> / 3
+        </div>
+        <!-- Authentication Section -->
+        <div class="auth-buttons">
+            <button onclick="signInWithGoogle()"><i class="fab fa-google"></i> Google ile Oturum Aç</button>
+            <button onclick="signOut()"><i class="fas fa-sign-out-alt"></i> Oturumu Kapat</button>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer onclick="window.location.href='https://t.me/mostral_ai'">Mostral AI, Meta-Llama kullanır!</footer>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM",
+            authDomain: "mostral-ai.firebaseapp.com",
+            projectId: "mostral-ai",
+            storageBucket: "mostral-ai.appspot.com",
+            messagingSenderId: "10931418825",
+            appId: "1:10931418825:web:e6d9a330d1dd476b523f18",
+            measurementId: "G-75MDGRNVTF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Initialize Update Count
+        const MAX_UPDATES_PER_MONTH = 3;
+
+        // On Auth State Changed
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User is signed in
+                const uid = user.uid;
+                // Fetch user data
+                const docRef = doc(db, "users", uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const currentMonth = new Date().getMonth();
+                    if (data.lastUpdateMonth !== currentMonth) {
+                        // Reset update count for new month
+                        await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
+                        document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
+                    } else {
+                        document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH - data.updateCount;
+                    }
+                    // Update profile and cover photo if available
+                    if (data.profilePicture) {
+                        document.getElementById('profilePicture').src = data.profilePicture;
+                    }
+                    if (data.coverPhoto) {
+                        document.getElementById('coverPhoto').src = data.coverPhoto;
+                    }
+                } else {
+                    // Create new user document
+                    await setDoc(docRef, { updateCount: 0, lastUpdateMonth: new Date().getMonth() });
+                    document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
+                }
+            } else {
+                // User is signed out
+                document.getElementById('remainingUpdates').innerText = '0';
+                document.getElementById('profilePicture').src = 'default_profile.png';
+                document.getElementById('coverPhoto').src = 'default_cover.jpg';
+            }
+        });
+
+        // Sign In with Google
+        const provider = new GoogleAuthProvider();
+        async function signInWithGoogle() {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                alert(`Hoşgeldin, ${user.displayName}`);
+            } catch (error) {
+                console.error('Google Girişi Hatası:', error);
+                alert('Google ile oturum açma başarısız oldu.');
+            }
+        }
+
+        // Sign Out Function
+        async function signOut() {
+            try {
+                await firebaseSignOut(auth);
+                alert('Oturumunuz kapatıldı.');
+                document.getElementById('profilePicture').src = 'default_profile.png';
+                document.getElementById('coverPhoto').src = 'default_cover.jpg';
+                document.getElementById('remainingUpdates').innerText = '0';
+            } catch (error) {
+                console.error('Oturum Kapatma Hatası:', error);
+                alert('Oturum kapatma başarısız oldu.');
+            }
+        }
+
+        // Trigger Cover Photo Upload
+        function triggerCoverUpload() {
+            document.getElementById('coverInput').click();
+        }
+
+        // Upload Cover Photo
+        async function uploadCoverPhoto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Bu işlemi yapmak için oturum açmanız gerekiyor.');
+                return;
+            }
+            const uid = user.uid;
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const currentMonth = new Date().getMonth();
+                if (data.lastUpdateMonth !== currentMonth) {
+                    // Reset update count
+                    await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
+                }
+                if (data.updateCount >= MAX_UPDATES_PER_MONTH) {
+                    alert('Profil güncelleme hakkınız doldu. Lütfen gelecek ay tekrar deneyin.');
+                    return;
+                }
+                // Upload Image
+                const storageRef = ref(storage, `profiles/${uid}/cover_${Date.now()}`);
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                // Update Firestore
+                await updateDoc(docRef, {
+                    coverPhoto: downloadURL,
+                    updateCount: increment(1)
+                });
+                // Update UI
+                document.getElementById('coverPhoto').src = downloadURL;
+                // Update remaining updates
+                const remaining = MAX_UPDATES_PER_MONTH - (data.updateCount +1);
+                document.getElementById('remainingUpdates').innerText = remaining;
+                alert('Kapak fotoğrafın��z başarıyla güncellendi.');
+            }
+        }
+
+        // Trigger Profile Picture Upload
+        function triggerProfileUpload() {
+            document.getElementById('profileInput').click();
+        }
+
+        // Upload Profile Picture
+        async function uploadProfilePicture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Bu işlemi yapmak için oturum açmanız gerekiyor.');
+                return;
+            }
+            const uid = user.uid;
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const currentMonth = new Date().getMonth();
+                if (data.lastUpdateMonth !== currentMonth) {
+                    // Reset update count
+                    await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
+                }
+                if (data.updateCount >= MAX_UPDATES_PER_MONTH) {
+                    alert('Profil güncelleme hakkınız doldu. Lütfen gelecek ay tekrar deneyin.');
+                    return;
+                }
+                // Upload Image
+                const storageRef = ref(storage, `profiles/${uid}/profile_${Date.now()}`);
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                // Update Firestore
+                await updateDoc(docRef, {
+                    profilePicture: downloadURL,
+                    updateCount: increment(1)
+                });
+                // Update UI
+                document.getElementById('profilePicture').src = downloadURL;
+                // Update remaining updates
+                const remaining = MAX_UPDATES_PER_MONTH - (data.updateCount +1);
+                document.getElementById('remainingUpdates').innerText = remaining;
+                alert('Profil fotoğrafınız başarıyla güncellendi.');
+            }
+        }
+    </script>
+</body>
+</html> 

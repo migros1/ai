@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <!-- Meta Tags for SEO -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mostral AI Chat</title>
+    <meta name="description" content="Mostral AI ile akıllı sohbet deneyimi. Meta-Llama teknolojisi kullanır.">
+    <meta name="keywords" content="AI Chat, Mostral AI, Meta-Llama, Akıllı Sohbet, Yapay Zeka">
+    <meta name="author" content="Mostral AI">
+    <meta property="og:title" content="Mostral AI Chat">
+    <meta property="og:description" content="Mostral AI ile akıllı sohbet deneyimi. Meta-Llama teknolojisi kullanır.">
+    <meta property="og:url" content="https://t.me/mostral_ai">
+    <meta property="og:type" content="website">
+    <!-- Google Sign-In -->
+    <meta name="google-signin-client_id" content="AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM.apps.googleusercontent.com">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Prism.js for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <!-- CSS Styles -->
     <style>
-        /* Genel Stil - Karanlık Tema */
+        /* Karanlık Tema Genel Stil */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
@@ -14,9 +31,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative;
         }
         h1 {
             color: #bb86fc;
@@ -54,6 +72,7 @@
             transition: background-color 0.3s, transform 0.3s;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-size: 16px;
         }
         .gpt-response p {
             background-color: #2c2c2c;
@@ -61,11 +80,34 @@
             align-self: flex-start;
         }
         .user-response p {
-            background-color: #3c3c3c;
-            color: #ffffff;
+            background-color: #007aff;
+            color: #fff;
             align-self: flex-end;
         }
-        /* İkon Butonları */
+        /* Bold ve Italik Text Styling */
+        .gpt-response p strong, .user-response p strong {
+            font-weight: bold;
+        }
+        .gpt-response p em, .user-response p em {
+            font-style: italic;
+        }
+        /* Kod Bloğu Stili */
+        pre {
+            background-color: #272727;
+            padding: 12px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 80%;
+        }
+        code {
+            color: #ffcc00;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        /* Response Actions Buttons */
         .response-actions {
             margin-top: 10px;
             display: flex;
@@ -75,120 +117,168 @@
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 1.2em;
-            transition: transform 0.2s;
+            color: #bbb;
+            transition: color 0.3s, transform 0.3s;
         }
         .response-actions button:hover {
-            transform: scale(1.2);
+            color: #fff;
+            transform: scale(1.1);
         }
-        /* Input ve Gönder Butonu */
-        #userInput {
+        /* Input Area */
+        #inputArea {
             width: 100%;
             max-width: 800px;
-            margin-top: 20px;
             display: flex;
-            background-color: #1e1e1e;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            animation: fadeInUp 1s ease-in-out;
+            margin-top: 20px;
         }
-        #userInput input {
+        #message {
             flex: 1;
             padding: 10px;
             border: 1px solid #333;
-            border-radius: 5px;
-            font-size: 1em;
-            background-color: #2c2c2c;
+            border-radius: 5px 0 0 5px;
+            background-color: #1e1e1e;
             color: #e0e0e0;
-            transition: border 0.3s;
         }
-        #userInput input:focus {
-            border: 1px solid #bb86fc;
-            outline: none;
-        }
-        #userInput button {
+        #sendButton {
             padding: 10px 20px;
-            margin-left: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 0 5px 5px 0;
             background-color: #bb86fc;
             color: #fff;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
         }
-        #userInput button:hover {
-            background-color: #985eff;
+        #sendButton:hover {
+            background-color: #9b5de5;
             transform: scale(1.05);
         }
-        /* Konuşma ID Gösterimi */
-        #conversationID {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #2c2c2c;
-            padding: 10px 20px;
-            border-radius: 20px;
-            color: #bb86fc;
-            font-weight: bold;
-            animation: fadeInDown 1s ease-in-out;
-        }
-        /* İndirme Butonu */
-        #downloadButton {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #ff9500;
-            color: #fff;
+        /* Hamburger Icon */
+        #hamburger {
+            font-size: 30px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #bb86fc;
+            transition: color 0.3s;
         }
-        #downloadButton:hover {
-            background-color: #e08900;
-            transform: scale(1.05);
+        #hamburger:hover {
+            color: #fff;
         }
-        /* ID Paylaşma ve Oturum Açma Butonları */
-        #idSection {
-            width: 100%;
-            max-width: 800px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeInUp 1s ease-in-out;
+        /* Sidebar (Yan Menü) */
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            background-color: #1e1e1e;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
         }
-        #idSection input {
-            flex: 1;
-            padding: 10px;
+        #sidebar a {
+            padding: 10px 30px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #e0e0e0;
+            display: block;
+            transition: 0.3s;
+        }
+        #sidebar a:hover {
+            color: #bb86fc;
+        }
+        #sidebar .closebtn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        /* History Panel */
+        #historyPanel {
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            width: 300px;
+            max-height: 60vh;
+            overflow-y: auto;
+            background-color: #1e1e1e;
             border: 1px solid #333;
             border-radius: 5px;
-            font-size: 1em;
-            background-color: #2c2c2c;
-            color: #e0e0e0;
-            margin-right: 10px;
+            padding: 10px;
+            z-index: 1000;
         }
-        #idSection button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #03dac6;
-            color: #000;
+        #historyPanel h3 {
+            margin-top: 0;
+            color: #bb86fc;
+        }
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #333;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s;
         }
-        #idSection button:hover {
-            background-color: #00bfa5;
-            transform: scale(1.05);
+        .history-item:hover {
+            background-color: #2c2c2c;
         }
-        /* Dosya Yükleme Butonu */
-        #fileInput {
-            display: none;
+        .history-item p {
+            margin: 5px 0;
+        }
+        /* Suggestions */
+        #suggestions {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        #suggestions h2 {
+            color: #bb86fc;
+        }
+        #suggestions ul {
+            list-style: none;
+            padding: 0;
+        }
+        #suggestions li {
+            padding: 10px;
+            background-color: #2c2c2c;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #suggestions li:hover {
+            background-color: #444;
+        }
+        /* Footer */
+        footer {
+            margin-top: 20px;
+            cursor: pointer;
+            color: #bb86fc;
+            transition: color 0.3s;
+        }
+        footer:hover {
+            color: #fff;
+        }
+        /* Responsive Design */
+        @media screen and (max-width: 600px) {
+            #chatbox {
+                height: 50vh;
+            }
+            #historyPanel {
+                width: 80%;
+                right: 10px;
+            }
+            #suggestions ul li {
+                font-size: 16px;
+            }
         }
         /* Animasyonlar */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -197,306 +287,102 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        /* Kod Bloğu Stili */
-        pre {
-            background-color: #2c2c2c;
-            padding: 10px;
-            border-radius: 5px;
-            overflow-x: auto;
-            width: 100%;
-            color: #8be9fd;
-        }
-        code {
-            font-family: 'Courier New', Courier, monospace;
-        }
     </style>
 </head>
 <body>
-    <h1>Mostral AI Chat</h1>
-    <div id="conversationID">ID: Yükleniyor...</div>
-    <button id="downloadButton">Konuşmayı İndir</button>
+    <!-- Hamburger Icon -->
+    <span id="hamburger"><i class="fas fa-bars"></i></span>
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeSidebar()">&times;</a>
+        <a href="#" onclick="triggerFileInput()">ID Bağla</a>
+        <a href="#" onclick="authenticate()">ID ile Oturum Aç</a>
+        <a href="profile.html">Profilim</a>
+        <a href="#" onclick="toggleHistoryPanel()">Geçmiş</a>
+    </div>
+    <!-- Current ID Display -->
+    <div id="currentIDDisplay" style="position: absolute; top: 20px; right: 20px; color: #fff;">
+        ID: <span id="currentID">Yükleniyor...</span>
+    </div>
+    <!-- Chatbox -->
+    <h1>Mostral AI ile Sohbet Et</h1>
     <div id="chatbox">
-        <!-- Konuşma mesajları burada görünecek -->
+        <!-- Sohbet mesajları burada görüntülenir -->
     </div>
-    <div id="userInput">
-        <input type="text" id="message" placeholder="Mesajınızı yazın...">
-        <button onclick="sendMessage()">Gönder</button>
+    <!-- Input Area -->
+    <div id="inputArea">
+        <input type="text" id="message" placeholder="Mesajınızı yazın..." />
+        <button id="sendButton" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Gönder</button>
     </div>
-    <div id="idSection">
-        <input type="file" id="fileInput" accept=".txt" onchange="importID(event)">
-        <button onclick="triggerFileInput()">ID Bağla</button>
-        <button onclick="authenticate()">Oturumu Aç</button>
+    <!-- History Panel -->
+    <div id="historyPanel">
+        <h3>Konuşma Geçmişi</h3>
+        <div id="historyList">
+            <!-- Geçmiş listesi buraya gelecek -->
+        </div>
     </div>
+    <!-- Footer -->
+    <footer onclick="window.location.href='https://t.me/mostral_ai'">Mostral AI, Meta-Llama kullanır!</footer>
+    <!-- Hidden File Input for ID Bağla -->
+    <input type="file" id="fileInput" accept=".txt" style="display:none" onchange="importID(event)" />
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
 
-    <script>
-        const STORAGE_KEY = 'mostralai_log';
-        const ID_LOGIN_KEY = 'id_login';
-        let conversationHistory = '';
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM",
+            authDomain: "mostral-ai.firebaseapp.com",
+            projectId: "mostral-ai",
+            storageBucket: "mostral-ai.appspot.com",
+            messagingSenderId: "10931418825",
+            appId: "1:10931418825:web:e6d9a330d1dd476b523f18",
+            measurementId: "G-75MDGRNVTF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Initialize Variables
         let currentID = '';
+        const ID_LOGIN_KEY = 'id_login';
+        const USER_ID_KEY = 'user_id';
+        const USER_UPDATE_COUNT_KEY = 'user_update_count';
 
-        // Sayfa Yüklendiğinde Konuşma Geçmişini ve ID'yi Yükle
-        window.onload = function() {
+        // On Page Load
+        window.onload = async function() {
+            loadSuggestions();
             initializeID();
-            loadConversationHistory();
         }
 
-        // ID'yi Başlatma veya Yükleme Fonksiyonu
-        function initializeID() {
-            let storedID = localStorage.getItem(ID_LOGIN_KEY);
-            if (!storedID) {
-                // Yeni bir ID oluştur
-                storedID = generateUniqueID();
-                localStorage.setItem(ID_LOGIN_KEY, storedID);
-                downloadFile('id_login.txt', storedID);
+        // Initialize ID
+        async function initializeID() {
+            currentID = localStorage.getItem(ID_LOGIN_KEY);
+            if (!currentID) {
+                generateAndDownloadID();
+            } else {
+                document.getElementById('currentID').innerText = currentID;
+                loadConversationHistory();
             }
-            currentID = storedID;
-            document.getElementById('conversationID').innerText = `ID: ${currentID}`;
         }
 
-        // Benzersiz ID Oluşturma Fonksiyonu
+        // Generate Unique ID
         function generateUniqueID() {
             return 'ID-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         }
 
-        // Konuşma Geçmişini Yükleme Fonksiyonu
-        function loadConversationHistory() {
-            const storedHistory = localStorage.getItem(currentID);
-            if (storedHistory) {
-                conversationHistory = storedHistory;
-                displayHistory(storedHistory);
-            }
-        }
-
-        // Konuşma Geçmişini Gösterme Fonksiyonu
-        function displayHistory(history) {
-            const chatbox = document.getElementById('chatbox');
-            const messages = history.split('\n');
-            messages.forEach(message => {
-                if (message.startsWith('Siz: ')) {
-                    chatbox.innerHTML += `
-                        <div class="user-response">
-                            <p><strong>Siz:</strong> ${sanitize(message.replace('Siz: ', ''))}</p>
-                        </div>
-                    `;
-                } else if (message.startsWith('Mostral AI: ')) {
-                    const response = message.replace('Mostral AI: ', '');
-                    chatbox.innerHTML += `
-                        <div class="gpt-response">
-                            <p><strong>Mostral AI:</strong></p>
-                            <div class="message-content">${sanitize(formatResponse(response))}</div>
-                            <div class="response-actions">
-                                <button onclick="copyResponse(this)" title="Cevabı Kopyala">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Copy" style="width:20px;height:20px;">
-                                </button>
-                                <button onclick="copyCode(this)" title="Kodu Kopyala">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" alt="Code" style="width:20px;height:20px;">
-                                </button>
-                                <button onclick="regenerateResponse(this)" title="Tekrar Yaz">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Regenerate" style="width:20px;height:20px;">
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-
-        // Mesaj Gönderme Fonksiyonu
-        function sendMessage() {
-            const messageInput = document.getElementById('message');
-            const message = messageInput.value.trim();
-            if (message === '') return;
-
-            const chatbox = document.getElementById('chatbox');
-            chatbox.innerHTML += `
-                <div class="user-response">
-                    <p><strong>Siz:</strong> ${sanitize(message)}</p>
-                </div>
-            `;
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            // Konuşma Geçmişini Güncelle
-            conversationHistory += `Siz: ${message}\n`;
-            localStorage.setItem(currentID, conversationHistory);
-
-            messageInput.value = '';
-
-            // API İsteği
-            const encodedMessage = encodeURIComponent(message);
-            fetch(`https://darkness.ashlynn.workers.dev/chat/?prompt=${encodedMessage}&model=meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 200) {
-                        const reply = data.response;
-                        conversationHistory += `Mostral AI: ${reply}\n`;
-                        localStorage.setItem(currentID, conversationHistory);
-                        appendAIResponse(reply);
-                    } else {
-                        appendAIError();
-                    }
-                })
-                .catch(error => {
-                    console.error('Hata:', error);
-                    appendAIError();
-                });
-        }
-
-        // ChatGPT Yanıtını Ekleme Fonksiyonu (Animasyonlu)
-        function appendAIResponse(reply) {
-            const chatbox = document.getElementById('chatbox');
-            const gptResponse = document.createElement('div');
-            gptResponse.className = 'gpt-response';
-            gptResponse.innerHTML = `
-                <p><strong>Mostral AI:</strong></p>
-                <div class="message-content" id="message-${Date.now()}"></div>
-                <div class="response-actions">
-                    <button onclick="copyResponse(this)" title="Cevabı Kopyala">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Copy" style="width:20px;height:20px;">
-                    </button>
-                    <button onclick="copyCode(this)" title="Kodu Kopyala">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055687.png" alt="Code" style="width:20px;height:20px;">
-                    </button>
-                    <button onclick="regenerateResponse(this)" title="Tekrar Yaz">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828817.png" alt="Regenerate" style="width:20px;height:20px;">
-                    </button>
-                </div>
-            `;
-            chatbox.appendChild(gptResponse);
-            animateTyping(`message-${Date.now()}`, formatResponse(reply));
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-
-        // ChatGPT Hata Mesajını Ekleme Fonksiyonu
-        function appendAIError() {
-            const chatbox = document.getElementById('chatbox');
-            chatbox.innerHTML += `
-                <div class="gpt-response">
-                    <p><strong>Mostral AI:</strong></p>
-                    <p>Bir hata oluştu. Lütfen tekrar deneyin.</p>
-                </div>
-            `;
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-
-        // Yanıtı Sanitize Etme Fonksiyonu (XSS Önleme)
-        function sanitize(str) {
-            return str.replace(/&/g, "&amp;")
-                      .replace(/</g, "&lt;")
-                      .replace(/>/g, "&gt;")
-                      .replace(/"/g, "&quot;")
-                      .replace(/'/g, "&#039;");
-        }
-
-        // Yanıt İçeriğini Formatlama Fonksiyonu (Markdown Benzeri)
-        function formatResponse(message) {
-            // Kalın yazı için ****
-            message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // İtalik yazı için *
-            message = message.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            // Kod bloklarını <pre><code> etiketleri içine al
-            message = message.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="$1">$2</code></pre>');
-            return message;
-        }
-
-        // Yazılım Animasyonu Fonksiyonu
-        function animateTyping(elementId, text) {
-            const element = document.getElementById(elementId);
-            let index = 0;
-            const speed = 50; // Yazma hızı (milisaniye)
-            const typingInterval = setInterval(() => {
-                if (index < text.length) {
-                    element.innerHTML += text.charAt(index);
-                    index++;
-                    chatbox.scrollTop = chatbox.scrollHeight;
-                } else {
-                    clearInterval(typingInterval);
-                    element.innerHTML = text + '<span class="cursor">_</span>';
-                }
-            }, speed);
-        }
-
-        // Cevabı Kopyalama Fonksiyonu
-        function copyResponse(button) {
-            const responseDiv = button.closest('.gpt-response');
-            const text = responseDiv.querySelector('.message-content').innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Cevap kopyalandı!');
-            }).catch(err => {
-                console.error('Cevap kopyalanamadı: ', err);
-            });
-        }
-
-        // Kod Bloğunu Kopyalama Fonksiyonu
-        function copyCode(button) {
-            const responseDiv = button.closest('.gpt-response');
-            const codeElement = responseDiv.querySelector('code');
-            if (codeElement) {
-                const codeText = codeElement.textContent || codeElement.innerText;
-                navigator.clipboard.writeText(codeText).then(() => {
-                    alert('Kod kopyalandı!');
-                }).catch(err => {
-                    console.error('Kod kopyalanamadı: ', err);
-                });
-            } else {
-                alert('Kopyalanacak bir kod bloğu bulunmuyor.');
-            }
-        }
-
-        // Yanıtı Tekrar Yazdırma Fonksiyonu
-        function regenerateResponse(button) {
-            const responseDiv = button.closest('.gpt-response');
-            const replyElement = responseDiv.querySelector('.message-content');
-            let originalMessage = replyElement ? replyElement.innerText.replace('_', '').trim() : '';
-
-            if (originalMessage === '') {
-                alert('Tekrar yazdırmak için geçerli bir mesaj bulunamadı.');
-                return;
-            }
-
-            const chatbox = document.getElementById('chatbox');
-
-            // Kullanıcı Mesajını Ekleyin
-            chatbox.innerHTML += `
-                <div class="user-response">
-                    <p><strong>Siz:</strong> ${sanitize(originalMessage)}</p>
-                </div>
-            `;
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            // Konuşma Geçmişini Güncelle
-            conversationHistory += `Siz: ${originalMessage}\n`;
-            localStorage.setItem(currentID, conversationHistory);
-
-            // API İsteği
-            const encodedMessage = encodeURIComponent(originalMessage);
-            fetch(`https://darkness.ashlynn.workers.dev/chat/?prompt=${encodedMessage}&model=meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 200) {
-                        const reply = data.response;
-                        conversationHistory += `Mostral AI: ${reply}\n`;
-                        localStorage.setItem(currentID, conversationHistory);
-                        appendAIResponse(reply);
-                    } else {
-                        appendAIError();
-                    }
-                })
-                .catch(error => {
-                    console.error('Hata:', error);
-                    appendAIError();
-                });
-        }
-
-        // Dosya İndirme Fonksiyonu
+        // Download File Function
         function downloadFile(filename, content) {
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
@@ -507,34 +393,172 @@
             URL.revokeObjectURL(url);
         }
 
-        // Konuşmayı İndirme Fonksiyonu
-        function downloadConversation() {
-            const blob = new Blob([conversationHistory], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'conversation.mostralailog';
-            a.click();
-            URL.revokeObjectURL(url);
+        // Generate and Download ID
+        function generateAndDownloadID() {
+            const newID = generateUniqueID();
+            currentID = newID;
+            localStorage.setItem(ID_LOGIN_KEY, newID);
+            document.getElementById('currentID').innerText = newID;
+            downloadFile('id_login.txt', newID);
+            loadConversationHistory();
         }
 
-        // ID Bağlama Butonunu Tetikleme Fonksiyonu
+        // Append User Message
+        function appendUserMessage(message, isSuggestion = false) {
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML += `
+                <div class="user-response">
+                    <p><strong>Siz:</strong> ${sanitize(message)}</p>
+                </div>
+            `;
+            chatbox.scrollTop = chatbox.scrollHeight;
+            saveConversation('Siz', message);
+        }
+
+        // Send Message Function
+        function sendMessage() {
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value.trim();
+            if (message === '') return;
+
+            appendUserMessage(message);
+            messageInput.value = '';
+
+            fetchGPTResponse(message);
+        }
+
+        // Fetch GPT Response
+        function fetchGPTResponse(message) {
+            const chatbox = document.getElementById('chatbox');
+            // Gösterindirme Göstergesi
+            chatbox.innerHTML += `
+                <div class="gpt-response">
+                    <p><em>Mostral AI yanıt bekliyor...</em></p>
+                </div>
+            `;
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // API İsteği (Örnek URL, gerçekte API'yi değiştirin)
+            fetch(`https://darkness.ashlynn.workers.dev/chat/?prompt=${encodeURIComponent(message)}&model=meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo`)
+                .then(response => response.json())
+                .then(data => {
+                    // Yanıtı Güncelle
+                    const lastResponseDiv = chatbox.querySelectorAll('.gpt-response');
+                    const lastResponse = lastResponseDiv[lastResponseDiv.length -1];
+                    if (data.status === 200) {
+                        const reply = data.response;
+                        const formattedReply = formatResponse(reply);
+                        lastResponse.innerHTML = `
+                            <strong>Mostral AI:</strong><br>${formattedReply}
+                            <div class="response-actions">
+                                <button onclick="copyResponse(this)" title="Cevabı Kopyala"><i class="fas fa-copy"></i></button>
+                                <button onclick="copyCode(this)" title="Kodu Kopyala"><i class="fas fa-code"></i></button>
+                                <button onclick="regenerateResponse(this)" title="Tekrar Yaz"><i class="fas fa-sync-alt"></i></button>
+                            </div>
+                        `;
+                        saveConversation('Mostral AI', reply);
+                        // Highlight Code Blocks After Response
+                        Prism.highlightAll();
+                    } else {
+                        lastResponse.innerHTML = `<strong>Mostral AI:</strong> Bir hata oluştu. Lütfen tekrar deneyin.`;
+                    }
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Hata:', error);
+                    const lastResponseDiv = chatbox.querySelectorAll('.gpt-response');
+                    const lastResponse = lastResponseDiv[lastResponseDiv.length -1];
+                    lastResponse.innerHTML = `<strong>Mostral AI:</strong> Bir hata oluştu. Lütfen tekrar deneyin.`;
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                });
+        }
+
+        // Format Response (Bold, Italic, Code)
+        function formatResponse(text) {
+            // Kalın Yazı
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // İtalik Yazı
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // Kod Bloğu
+            text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
+            return text;
+        }
+
+        // Sanitize Function for XSS Protection
+        function sanitize(str) {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+        // Copy Response Function
+        function copyResponse(button) {
+            const responseDiv = button.parentElement.parentElement;
+            const text = responseDiv.querySelector('p').innerText.replace('Mostral AI:', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Yanıt kopyalandı!');
+            }).catch(err => {
+                console.error('Kopyalama Hatası:', err);
+            });
+        }
+
+        // Copy Code Function
+        function copyCode(button) {
+            const responseDiv = button.parentElement.parentElement;
+            const codeElement = responseDiv.querySelector('pre code');
+            if (codeElement) {
+                const code = codeElement.innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    alert('Kod kopyalandı!');
+                }).catch(err => {
+                    console.error('Kopyalama Hatası:', err);
+                });
+            } else {
+                alert('Kopyalanacak bir kod bloğu bulunamadı.');
+            }
+        }
+
+        // Regenerate Response Function
+        function regenerateResponse(button) {
+            const responseDiv = button.parentElement.parentElement;
+            const originalText = responseDiv.querySelector('p').innerText.replace('Mostral AI:', '').trim();
+            if (originalText === '') {
+                alert('Tekrar yazdırmak için geçerli bir mesaj bulunamadı.');
+                return;
+            }
+            // Kullanıcının orijinal mesajını tekrar gönder
+            appendUserMessage(originalText);
+            fetchGPTResponse(originalText);
+        }
+
+        // Sidebar Functions
+        function openSidebar() {
+            document.getElementById('sidebar').style.width = '250px';
+        }
+        function closeSidebar() {
+            document.getElementById('sidebar').style.width = '0';
+        }
+        document.getElementById('hamburger').onclick = openSidebar;
+
+        // Hidden File Input for ID Bağla
         function triggerFileInput() {
             document.getElementById('fileInput').click();
         }
 
-        // ID Dosyasını İçe Aktarma Fonksiyonu
-        function importID(event) {
+        // Import ID from File (id_connect.txt)
+        async function importID(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 const importedID = e.target.result.trim();
-                if (importedID.startsWith('ID-') && importedID.length === 12) {
+                if (importedID.startsWith('ID-') && importedID.length === 12) { // Assuming ID format is 'ID-' + 9 chars
                     currentID = importedID;
                     localStorage.setItem(ID_LOGIN_KEY, currentID);
-                    document.getElementById('conversationID').innerText = `ID: ${currentID}`;
+                    document.getElementById('currentID').innerText = currentID;
                     loadConversationHistory();
                     alert('ID başarıyla bağlandı!');
                 } else {
@@ -544,16 +568,116 @@
             reader.readAsText(file);
         }
 
-        // Oturumu Açma Fonksiyonu
-        function authenticate() {
+        // Authenticate Function (ID ile Oturum Aç)
+        async function authenticate() {
+            // Bu fonksiyon, ID'yi doğrulamak veya başka bir işlem yapmak için kullanılabilir.
+            // Şu anda sadece konuşma geçmişini yüklemektedir.
             const storedID = localStorage.getItem(ID_LOGIN_KEY);
             if (!storedID) {
-                alert('Bağlı bir ID bulunamadı.');
+                alert('Bağlanacak bir ID bulunamadı. Lütfen ID Bağla butonunu kullanın.');
                 return;
             }
-            // Bu örnekte, oturum açma sadece mevcut ID'yi yükleme olarak işlev görür
             loadConversationHistory();
             alert('Oturum açıldı ve konuşma geçmişi yüklendi!');
+        }
+
+        // Toggle History Panel
+        function toggleHistoryPanel() {
+            const historyPanel = document.getElementById('historyPanel');
+            if (historyPanel.style.display === 'none' || historyPanel.style.display === '') {
+                historyPanel.style.display = 'block';
+                loadHistoryList();
+            } else {
+                historyPanel.style.display = 'none';
+            }
+        }
+
+        // Load History List
+        function loadHistoryList() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('ID-')) {
+                    const history = JSON.parse(localStorage.getItem(key)) || [];
+                    if (history.length > 0) {
+                        const lastMessage = history[history.length -1];
+                        historyList.innerHTML += `
+                            <div class="history-item" onclick="loadConversation('${key}')">
+                                <p><strong>${key}</strong></p>
+                                <p>${truncateText(lastMessage.message, 50)}</p>
+                                <small>${lastMessage.timestamp}</small>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        }
+
+        // Truncate Text for History List
+        function truncateText(text, maxLength) {
+            return text.length > maxLength ? text.substr(0, maxLength) + '...' : text;
+        }
+
+        // Load Conversation History
+        function loadConversationHistory() {
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML = '';
+            const history = JSON.parse(localStorage.getItem(currentID)) || [];
+            history.forEach(message => {
+                if (message.sender === 'Siz') {
+                    chatbox.innerHTML += `
+                        <div class="user-response">
+                            <p><strong>Siz:</strong> ${sanitize(message.message)}</p>
+                        </div>
+                    `;
+                } else if (message.sender === 'Mostral AI') {
+                    const formattedReply = formatResponse(message.message);
+                    chatbox.innerHTML += `
+                        <div class="gpt-response">
+                            <p><strong>Mostral AI:</strong></p>
+                            <p>${formattedReply}</p>
+                            <div class="response-actions">
+                                <button onclick="copyResponse(this)" title="Cevabı Kopyala"><i class="fas fa-copy"></i></button>
+                                <button onclick="copyCode(this)" title="Kodu Kopyala"><i class="fas fa-code"></i></button>
+                                <button onclick="regenerateResponse(this)" title="Tekrar Yaz"><i class="fas fa-sync-alt"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            chatbox.scrollTop = chatbox.scrollHeight;
+            // Highlight Code Blocks After Loading History
+            Prism.highlightAll();
+        }
+
+        // Download Conversation
+        function downloadConversation() {
+            const history = JSON.parse(localStorage.getItem(currentID)) || [];
+            const formattedHistory = history.map(msg => `${msg.sender}: ${msg.message} (${msg.timestamp})`).join('\n');
+            downloadFile('conversation.mostralailog', formattedHistory);
+        }
+
+        // Add to Conversation
+        function saveConversation(sender, message) {
+            const timestamp = new Date().toLocaleString();
+            const messageObj = { sender, message, timestamp };
+            let history = JSON.parse(localStorage.getItem(currentID)) || [];
+            history.push(messageObj);
+            localStorage.setItem(currentID, JSON.stringify(history));
+        }
+
+        // Load Suggestions (Removed as per latest instruction)
+        function loadSuggestions() {
+            // En çok arananlar yerini sohbette gösterilecek, öneriler kullanıcı mesaj attığında bir daha görünmeyecek.
+            // Bu yüzden öneriler sohbet içinde dinamik olarak ekleniyor.
+        }
+
+        // Onerilen Bir Başlığı Seçme Fonksiyonu
+        function selectSuggestion(suggestion) {
+            appendUserMessage(suggestion);
+            fetchGPTResponse(suggestion);
+            // Öneriyi tekrar görünmemesi için başka bir mekanizma eklenebilir (örneğin, DOM'dan kaldırma)
         }
     </script>
 </body>
