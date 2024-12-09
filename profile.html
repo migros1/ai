@@ -12,13 +12,37 @@
     <meta property="og:description" content="Mostral AI Chat Profil Sayfası.">
     <meta property="og:url" content="https://t.me/mostral_ai">
     <meta property="og:type" content="website">
-    <!-- Google Sign-In -->
-    <meta name="google-signin-client_id" content="AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM.apps.googleusercontent.com">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Prism.js for Syntax Highlighting (if needed) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Firebase -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM",
+            authDomain: "mostral-ai.firebaseapp.com",
+            projectId: "mostral-ai",
+            storageBucket: "mostral-ai.firebasestorage.app",
+            messagingSenderId: "10931418825",
+            appId: "1:10931418825:web:e6d9a330d1dd476b523f18",
+            measurementId: "G-75MDGRNVTF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+    </script>
     <!-- CSS Styles -->
     <style>
         /* Karanlık Tema Genel Stil */
@@ -102,13 +126,13 @@
         /* Firebase Auth Buttons */
         .auth-buttons {
             display: flex;
-            flex-direction: column;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .auth-buttons button {
             padding: 10px 20px;
-            background-color: #4285F4;
+            background-color: #007aff;
             border: none;
             border-radius: 5px;
             color: #fff;
@@ -116,24 +140,48 @@
             transition: background-color 0.3s, transform 0.2s;
         }
         .auth-buttons button:hover {
-            background-color: #357ae8;
+            background-color: #005bb5;
             transform: scale(1.05);
         }
-        /* Footer */
-        footer {
-            margin-top: 20px;
-            cursor: pointer;
-            color: #bb86fc;
-            transition: color 0.3s;
+        /* Input Alanı Stili */
+        .input-group {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
         }
-        footer:hover {
+        .input-group label {
+            margin-bottom: 5px;
+            color: #e0e0e0;
+        }
+        .input-group input {
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+        .input-group button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #bb86fc;
+            border: none;
+            border-radius: 5px;
             color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
         }
-        /* Responsive Design */
-        @media screen and (max-width: 600px) {
-            .profile-container {
-                padding: 10px;
-            }
+        .input-group button:hover {
+            background-color: #9b5de5;
+            transform: scale(1.05);
+        }
+        /* Animasyonlar */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Responsive Tasarım */
+        @media screen and (max-width: 768px) {
             .cover-photo img {
                 height: 150px;
             }
@@ -141,194 +189,122 @@
                 width: 100px;
                 height: 100px;
             }
-            .upload-buttons button, .auth-buttons button {
-                width: 100%;
-            }
-        }
-        /* Animasyonlar */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
+    <!-- Profil Başlığı -->
     <h1>Profilim</h1>
+
+    <!-- Profile Container -->
     <div class="profile-container">
         <!-- Cover Photo -->
         <div class="cover-photo">
             <img id="coverPhoto" src="default_cover.jpg" alt="Kapak Fotoğrafı">
-            <input type="file" id="coverInput" accept="image/*" style="display:none" onchange="uploadCoverPhoto(event)" />
-            <button onclick="triggerCoverUpload()"><i class="fas fa-upload"></i> Kapak Fotoğrafı Yükle</button>
+            <button onclick="triggerCoverUpload()">Kapak Fotoğrafı Ekle</button>
+            <input type="text" id="coverURLInput" placeholder="Kapak fotoğrafı URL'si girin..." style="display:none;" onblur="saveCoverURL()">
         </div>
         <!-- Profile Picture -->
         <div class="profile-picture">
             <img id="profilePicture" src="default_profile.png" alt="Profil Fotoğrafı">
-            <input type="file" id="profileInput" accept="image/*" style="display:none" onchange="uploadProfilePicture(event)" />
-            <button onclick="triggerProfileUpload()"><i class="fas fa-upload"></i> Profil Fotoğrafı Yükle</button>
+            <button onclick="triggerProfileUpload()">Profil Fotoğrafı Ekle</button>
+            <input type="text" id="profileURLInput" placeholder="Profil fotoğrafı URL'si girin..." style="display:none;" onblur="saveProfileURL()">
         </div>
         <!-- Update Count -->
-        <div id="updateCount">
-            Güncel Profili Değiştirme Hakkı: <span id="remainingUpdates">3</span> / 3
-        </div>
-        <!-- Authentication Section -->
+        <div id="updateCount">Güncelleme Hakkınız: <span id="remainingUpdates">3</span> / 3</div>
+        <!-- Auth Buttons -->
         <div class="auth-buttons">
-            <button onclick="signInWithGoogle()"><i class="fab fa-google"></i> Google ile Oturum Aç</button>
-            <button onclick="signOut()"><i class="fas fa-sign-out-alt"></i> Oturumu Kapat</button>
+            <button onclick="signInWithGoogle()"><i class="fab fa-google"></i> Google ile Giriş Yap</button>
+            <button onclick="signOutUser()"><i class="fas fa-sign-out-alt"></i> Oturumu Kapat</button>
         </div>
     </div>
-    <!-- Footer -->
-    <footer onclick="window.location.href='https://t.me/mostral_ai'">Mostral AI, Meta-Llama kullanır!</footer>
-    <!-- Firebase SDKs -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
 
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCKYv6JPHhbYNFhBttxGH-wuAS75QawTWM",
-            authDomain: "mostral-ai.firebaseapp.com",
-            projectId: "mostral-ai",
-            storageBucket: "mostral-ai.appspot.com",
-            messagingSenderId: "10931418825",
-            appId: "1:10931418825:web:e6d9a330d1dd476b523f18",
-            measurementId: "G-75MDGRNVTF"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
-
-        // Initialize Update Count
+    <!-- JavaScript -->
+    <script>
         const MAX_UPDATES_PER_MONTH = 3;
 
-        // On Auth State Changed
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // User is signed in
-                const uid = user.uid;
-                // Fetch user data
-                const docRef = doc(db, "users", uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const currentMonth = new Date().getMonth();
-                    if (data.lastUpdateMonth !== currentMonth) {
-                        // Reset update count for new month
-                        await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
-                        document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
-                    } else {
-                        document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH - data.updateCount;
-                    }
-                    // Update profile and cover photo if available
-                    if (data.profilePicture) {
-                        document.getElementById('profilePicture').src = data.profilePicture;
-                    }
-                    if (data.coverPhoto) {
-                        document.getElementById('coverPhoto').src = data.coverPhoto;
-                    }
+        // Oturum Açma Fonksiyonu
+        function signInWithGoogle() {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    loadUserProfile(user);
+                    alert('Başarıyla oturum açtınız!');
+                })
+                .catch((error) => {
+                    console.error('Oturum Açma Hatası:', error);
+                    alert('Oturum açma başarısız oldu.');
+                });
+        }
+
+        // Oturumu Kapatma Fonksiyonu
+        function signOutUser() {
+            signOut(auth).then(() => {
+                alert('Oturumunuz kapatıldı.');
+                resetProfile();
+            }).catch((error) => {
+                console.error('Oturum Kapatma Hatası:', error);
+                alert('Oturum kapatma başarısız oldu.');
+            });
+        }
+
+        // Kullanıcı Profili Yükleme
+        async function loadUserProfile(user) {
+            if (!user) return;
+            const uid = user.uid;
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.profilePicture) {
+                    document.getElementById('profilePicture').src = data.profilePicture;
+                }
+                if (data.coverPhoto) {
+                    document.getElementById('coverPhoto').src = data.coverPhoto;
+                }
+                if (data.updateCount !== undefined) {
+                    document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH - data.updateCount;
                 } else {
-                    // Create new user document
-                    await setDoc(docRef, { updateCount: 0, lastUpdateMonth: new Date().getMonth() });
                     document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
                 }
             } else {
-                // User is signed out
-                document.getElementById('remainingUpdates').innerText = '0';
-                document.getElementById('profilePicture').src = 'default_profile.png';
-                document.getElementById('coverPhoto').src = 'default_cover.jpg';
+                // Yeni Kullanıcı Kaydı
+                await setDoc(doc(db, "users", uid), {
+                    profilePicture: '',
+                    coverPhoto: '',
+                    updateCount: 0,
+                    lastUpdateMonth: new Date().getMonth()
+                });
+                document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
+            }
+        }
+
+        // Sayfa Yüklendiğinde Oturum Durumunu Kontrol Et
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadUserProfile(user);
+            } else {
+                resetProfile();
             }
         });
 
-        // Sign In with Google
-        const provider = new GoogleAuthProvider();
-        async function signInWithGoogle() {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                alert(`Hoşgeldin, ${user.displayName}`);
-            } catch (error) {
-                console.error('Google Girişi Hatası:', error);
-                alert('Google ile oturum açma başarısız oldu.');
-            }
-        }
-
-        // Sign Out Function
-        async function signOut() {
-            try {
-                await firebaseSignOut(auth);
-                alert('Oturumunuz kapatıldı.');
-                document.getElementById('profilePicture').src = 'default_profile.png';
-                document.getElementById('coverPhoto').src = 'default_cover.jpg';
-                document.getElementById('remainingUpdates').innerText = '0';
-            } catch (error) {
-                console.error('Oturum Kapatma Hatası:', error);
-                alert('Oturum kapatma başarısız oldu.');
-            }
-        }
-
-        // Trigger Cover Photo Upload
+        // Profil URL'si Girişini Gösterme
         function triggerCoverUpload() {
-            document.getElementById('coverInput').click();
+            document.getElementById('coverURLInput').style.display = 'block';
+            document.getElementById('coverURLInput').focus();
         }
 
-        // Upload Cover Photo
-        async function uploadCoverPhoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const user = auth.currentUser;
-            if (!user) {
-                alert('Bu işlemi yapmak için oturum açmanız gerekiyor.');
-                return;
-            }
-            const uid = user.uid;
-            const docRef = doc(db, "users", uid);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const currentMonth = new Date().getMonth();
-                if (data.lastUpdateMonth !== currentMonth) {
-                    // Reset update count
-                    await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
-                }
-                if (data.updateCount >= MAX_UPDATES_PER_MONTH) {
-                    alert('Profil güncelleme hakkınız doldu. Lütfen gelecek ay tekrar deneyin.');
-                    return;
-                }
-                // Upload Image
-                const storageRef = ref(storage, `profiles/${uid}/cover_${Date.now()}`);
-                await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
-                // Update Firestore
-                await updateDoc(docRef, {
-                    coverPhoto: downloadURL,
-                    updateCount: increment(1)
-                });
-                // Update UI
-                document.getElementById('coverPhoto').src = downloadURL;
-                // Update remaining updates
-                const remaining = MAX_UPDATES_PER_MONTH - (data.updateCount +1);
-                document.getElementById('remainingUpdates').innerText = remaining;
-                alert('Kapak fotoğrafın��z başarıyla güncellendi.');
-            }
-        }
-
-        // Trigger Profile Picture Upload
         function triggerProfileUpload() {
-            document.getElementById('profileInput').click();
+            document.getElementById('profileURLInput').style.display = 'block';
+            document.getElementById('profileURLInput').focus();
         }
 
-        // Upload Profile Picture
-        async function uploadProfilePicture(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // Kapak Fotoğrafı URL'sini Kaydetme
+        async function saveCoverURL() {
+            const url = document.getElementById('coverURLInput').value.trim();
+            document.getElementById('coverURLInput').style.display = 'none';
+            document.getElementById('coverURLInput').value = '';
+            if (url === '') return;
             const user = auth.currentUser;
             if (!user) {
                 alert('Bu işlemi yapmak için oturum açmanız gerekiyor.');
@@ -341,29 +317,71 @@
                 const data = docSnap.data();
                 const currentMonth = new Date().getMonth();
                 if (data.lastUpdateMonth !== currentMonth) {
-                    // Reset update count
+                    // Ay sıfırlama
                     await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
+                    document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
                 }
                 if (data.updateCount >= MAX_UPDATES_PER_MONTH) {
                     alert('Profil güncelleme hakkınız doldu. Lütfen gelecek ay tekrar deneyin.');
                     return;
                 }
-                // Upload Image
-                const storageRef = ref(storage, `profiles/${uid}/profile_${Date.now()}`);
-                await uploadBytes(storageRef, file);
-                const downloadURL = await getDownloadURL(storageRef);
-                // Update Firestore
+                // Firestore'u Güncelle
                 await updateDoc(docRef, {
-                    profilePicture: downloadURL,
+                    coverPhoto: url,
                     updateCount: increment(1)
                 });
-                // Update UI
-                document.getElementById('profilePicture').src = downloadURL;
-                // Update remaining updates
-                const remaining = MAX_UPDATES_PER_MONTH - (data.updateCount +1);
-                document.getElementById('remainingUpdates').innerText = remaining;
+                // UI'yı Güncelle
+                document.getElementById('coverPhoto').src = url;
+                const remaining = MAX_UPDATES_PER_MONTH - (data.updateCount + 1);
+                document.getElementById('remainingUpdates').innerText = remaining > 0 ? remaining : 0;
+                alert('Kapak fotoğrafınız başarıyla güncellendi.');
+            }
+        }
+
+        // Profil Fotoğrafı URL'sini Kaydetme
+        async function saveProfileURL() {
+            const url = document.getElementById('profileURLInput').value.trim();
+            document.getElementById('profileURLInput').style.display = 'none';
+            document.getElementById('profileURLInput').value = '';
+            if (url === '') return;
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Bu işlemi yapmak için oturum açmanız gerekiyor.');
+                return;
+            }
+            const uid = user.uid;
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const currentMonth = new Date().getMonth();
+                if (data.lastUpdateMonth !== currentMonth) {
+                    // Ay sıfırlama
+                    await updateDoc(docRef, { updateCount: 0, lastUpdateMonth: currentMonth });
+                    document.getElementById('remainingUpdates').innerText = MAX_UPDATES_PER_MONTH;
+                }
+                if (data.updateCount >= MAX_UPDATES_PER_MONTH) {
+                    alert('Profil güncelleme hakkınız doldu. Lütfen gelecek ay tekrar deneyin.');
+                    return;
+                }
+                // Firestore'u Güncelle
+                await updateDoc(docRef, {
+                    profilePicture: url,
+                    updateCount: increment(1)
+                });
+                // UI'yı Güncelle
+                document.getElementById('profilePicture').src = url;
+                const remaining = MAX_UPDATES_PER_MONTH - (data.updateCount + 1);
+                document.getElementById('remainingUpdates').innerText = remaining > 0 ? remaining : 0;
                 alert('Profil fotoğrafınız başarıyla güncellendi.');
             }
+        }
+
+        // Profil Reset Fonksiyonu
+        function resetProfile() {
+            document.getElementById('profilePicture').src = 'default_profile.png';
+            document.getElementById('coverPhoto').src = 'default_cover.jpg';
+            document.getElementById('remainingUpdates').innerText = 0;
         }
     </script>
 </body>
