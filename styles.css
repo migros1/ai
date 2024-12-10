@@ -1,74 +1,84 @@
 body {
-    background-color: #121212;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #333;
+    color: #f4f4f4;
+}
+
+.chat-container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode .chat-container {
+    background-color: #444;
+    color: #f4f4f4;
 }
 
 .chat-box {
     height: 400px;
-    padding: 10px;
-    overflow-y: scroll;
-    border: 1px solid #444;
-    background-color: #1e1e1e;
-    border-radius: 5px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
     margin-bottom: 10px;
-    transition: background-color 0.3s ease;
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .chat-message {
-    margin: 10px 0;
-    opacity: 0;
-    animation: fadeIn 0.5s forwards;
+    margin: 5px 0;
 }
 
 .user-message {
+    color: blue;
     text-align: right;
-    color: #bb86fc; /* Kullanıcı mavi rengi */
-    font-weight: bold;
 }
 
 .bot-message {
+    color: green;
     text-align: left;
-    color: #03dac6; /* Bot yeşil rengi */
 }
 
-.code-container {
-    position: relative;
-    background-color: #2e2e2e; /* Kod bloğu arka plan rengi */
-    border: 1px solid #444;
-    border-radius: 5px;
+.loading-indicator {
+    text-align: center;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+input[type="text"] {
+    width: calc(100% - 90px);
     padding: 10px;
-    margin: 10px 0;
-    overflow: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.code-container pre {
-    color: #00ff00; /* Kod yazı rengi yeşil */
-    white-space: pre-wrap; /* Satır sonu yap */
-    word-wrap: break-word; /* Kelimeleri taşırma */
-    margin: 0; /* Pre etiketi için varsayılan margin'i kaldır */
-}
-
-.copy-code {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    cursor: pointer;
-    background-color: #6200ee;
-    color: white;
+button {
+    padding: 10px;
     border: none;
-    border-radius: 3px;
-    padding: 5px 10px;
-    font-size: 12px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.copy-code:hover {
-    background-color: #3700b3;
+button:hover {
+    background-color: #218838;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+body.dark-mode button {
+    background-color: #555;
+}
+
+body.dark-mode button:hover {
+    background-color: #666;
 }
