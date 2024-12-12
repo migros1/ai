@@ -1,19 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced AI Assistant Pro</title>
-    <!-- Temel Kütüphaneler -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <title>AI Chat Assistant Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tippy.js@6/animations/scale.css">
-    <!-- Custom Styles -->
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
+    <style>
         :root {
             --primary-color: #10a37f;
             --primary-dark: #0d8d6a;
@@ -28,10 +24,7 @@
             --hover-color: #2A2B32;
             --gradient-start: #2b2d3a;
             --gradient-end: #1a1b23;
-            --error-color: #ef4444;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --code-bg: #1f2937;
+            --code-bg: rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -41,287 +34,185 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Gelişmiş Animasyonlar */
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
         body {
             background: linear-gradient(-45deg, var(--gradient-start), var(--gradient-end));
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
             color: var(--text-color);
             min-height: 100vh;
-            display: flex;
         }
 
         .container {
             display: flex;
-            width: 100%;
-            max-width: 2000px;
-            margin: 0 auto;
+            min-height: 100vh;
             position: relative;
             backdrop-filter: blur(10px);
         }
 
-        /* Gelişmiş Sidebar */
+        /* Sidebar Styles */
         .sidebar {
-            width: 320px;
-            background-color: rgba(32, 33, 35, 0.9);
+            width: 300px;
+            background: rgba(32, 33, 35, 0.8);
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .sidebar-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .new-chat {
-            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
-            padding: 1rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .new-chat::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: 0.5s;
-        }
-
-        .new-chat:hover::before {
-            left: 100%;
-        }
-
-        .chat-history {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
             gap: 0.8rem;
+            padding: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .history-item {
-            padding: 1rem;
-            cursor: pointer;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
+        .new-chat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-history-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            position: relative;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-color);
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0.8rem;
+            transition: all 0.3s ease;
         }
 
-        .history-item:hover {
+        .chat-history-item:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateX(5px);
         }
 
-        .history-item.active {
+        .chat-history-item.active {
             background: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(16, 163, 127, 0.3);
+            box-shadow: 0 4px 15px rgba(16, 163, 127, 0.3);
         }
 
-        .history-item .date {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        /* Ana İçerik Alanı */
+        /* Main Content Styles */
         .main-content {
-            flex-grow: 1;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            position: relative;
             background: rgba(52, 53, 65, 0.7);
-        }
-
-        .toolbar {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem 2rem;
-            background: rgba(32, 33, 35, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .toolbar-group {
-            display: flex;
-            gap: 0.8rem;
-        }
-
-        .toolbar-button {
-            padding: 0.7rem 1.2rem;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .toolbar-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: 0.5s;
-        }
-
-        .toolbar-button:hover::before {
-            left: 100%;
-        }
-
-        .toolbar-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
+            backdrop-filter: blur(10px);
         }
 
         .chat-container {
-            flex-grow: 1;
-            overflow-y: auto;
+            flex: 1;
             padding: 2rem;
+            overflow-y: auto;
             scroll-behavior: smooth;
         }
 
         .message {
             display: flex;
-            padding: 2rem;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
             border-radius: 16px;
             animation: fadeIn 0.5s ease;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-            position: relative;
         }
 
         .message:hover {
             transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .user-message {
-            background: rgba(52, 53, 65, 0.8);
+        /* Kod blokları için stiller */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .ai-message {
-            background: rgba(68, 70, 84, 0.8);
+        .code-block pre {
+            overflow-x: auto;
+            padding: 1rem;
+            margin: 0;
         }
 
-        .message-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            margin-right: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            background: var(--primary-color);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .message-content {
-            flex-grow: 1;
-            line-height: 1.8;
-            font-size: 1.1rem;
-        }
-
-        .message-actions {
+        .code-block .language-label {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 0;
+            right: 0;
+            padding: 0.3rem 0.8rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 0 8px 0 8px;
+            font-size: 0.8rem;
+        }
+
+        /* Message Actions */
+        .message-actions {
             display: flex;
             gap: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .message:hover .message-actions {
-            opacity: 1;
+            margin-top: 1rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .message-action-button {
-            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            color: var(--text-color);
             cursor: pointer;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
         }
 
         .message-action-button:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
-        /* Gelişmiş Input Alanı */
+        /* Input Container Styles */
         .input-container {
-            position: sticky;
-            bottom: 0;
-            width: 100%;
             padding: 2rem;
             background: linear-gradient(to top, rgba(52, 53, 65, 0.9), transparent);
             backdrop-filter: blur(10px);
@@ -329,109 +220,111 @@
 
         .input-box {
             display: flex;
+            gap: 1rem;
             background: rgba(64, 65, 79, 0.9);
-            border-radius: 16px;
             padding: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .input-box:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         textarea {
-            width: 100%;
-            background: none;
+            flex: 1;
+            background: transparent;
             border: none;
             color: var(--text-color);
             font-size: 1.1rem;
             resize: none;
-            outline: none;
+            min-height: 40px;
             max-height: 200px;
-            line-height: 1.5;
             padding: 0.5rem;
+            outline: none;
         }
 
         .send-button {
-            background: var(--primary-color);
-            border: none;
-            color: var(--text-color);
-            cursor: pointer;
-            padding: 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-left: 1rem;
-        }
-
-        .send-button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        /* Kod Blokları */
-        .code-block {
-            background: var(--code-bg);
             padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            position: relative;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .code-block pre {
-            margin: 0;
-            white-space: pre-wrap;
-        }
-
-        .copy-button {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
             border: none;
-            border-radius: 6px;
+            border-radius: 12px;
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .copy-button:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Özel Scrollbar */
-        ::-webkit-scrollbar {
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 1.5rem;
+            margin: 1rem;
+            background: rgba(68, 70, 84, 0.7);
+            border-radius: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .typing-dots span {
             width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
+            height: 8px;
             background: var(--primary-color);
-            border-radius: 4px;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
         }
 
-        /* Mobil Uyumluluk */
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
-                left: -320px;
+                left: -300px;
                 height: 100vh;
                 z-index: 1000;
+                transition: all 0.3s ease;
             }
 
             .sidebar.active {
@@ -444,128 +337,60 @@
                 top: 1rem;
                 left: 1rem;
                 z-index: 1001;
+                padding: 0.8rem;
+                border-radius: 8px;
                 background: var(--primary-color);
                 border: none;
                 color: white;
-                padding: 0.8rem;
-                border-radius: 8px;
                 cursor: pointer;
-            }
-        }
-
-        /* Notification Styles */
-        .notification {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            color: white;
-            animation: slideIn 0.5s ease;
-            z-index: 1000;
-        }
-
-        .notification.success {
-            background: var(--success-color);
-        }
-
-        .notification.error {
-            background: var(--error-color);
-        }
-
-        .notification.warning {
-            background: var(--warning-color);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Ana Container -->
-    <div class="container">
-        <!-- Mobil Menü Butonu -->
-        <button class="menu-toggle" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
 
-        <!-- Sidebar -->
+    <div class="container">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2>AI Assistant Pro</h2>
-                <div class="sidebar-actions">
-                    <button class="toolbar-button" onclick="toggleTheme()">
-                        <i class="fas fa-moon"></i>
-                    </button>
+                <div class="logo-container">
+                    <i class="fas fa-robot" style="color: var(--primary-color); font-size: 1.8rem;"></i>
+                    <h2>AI Assistant Pro</h2>
                 </div>
             </div>
 
-            <div class="new-chat" onclick="startNewChat()">
+            <button class="new-chat" onclick="ChatManager.startNewChat()">
                 <i class="fas fa-plus"></i>
                 <span>Yeni Sohbet</span>
-            </div>
+            </button>
 
-            <div class="chat-history" id="chatHistory">
-                <!-- Sohbet geçmişi buraya gelecek -->
-            </div>
-
-            <div class="sidebar-footer">
-                <button class="toolbar-button" onclick="importChat()">
-                    <i class="fas fa-file-import"></i>
-                    <span>Sohbet İçe Aktar</span>
-                </button>
-            </div>
+            <div id="chatHistory"></div>
         </div>
 
-        <!-- Ana İçerik -->
         <div class="main-content">
-            <div class="toolbar">
-                <div class="toolbar-group">
-                    <button class="toolbar-button" onclick="clearChat()">
-                        <i class="fas fa-trash"></i>
-                        <span>Temizle</span>
-                    </button>
-                    <button class="toolbar-button" onclick="exportChat()">
-                        <i class="fas fa-file-export"></i>
-                        <span>Dışa Aktar</span>
-                    </button>
-                </div>
-                <div class="toolbar-group">
-                    <button class="toolbar-button" onclick="toggleMarkdownGuide()">
-                        <i class="fas fa-question-circle"></i>
-                        <span>Markdown Rehberi</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="chat-container" id="chatContainer">
-                <!-- Mesajlar buraya gelecek -->
-            </div>
-
+            <div class="chat-container" id="chatContainer"></div>
+            
             <div class="typing-indicator" id="typingIndicator">
                 <div class="typing-dots">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
+                <div style="margin-top: 0.5rem;">AI düşünüyor...</div>
             </div>
 
             <div class="input-container">
                 <div class="input-box">
                     <textarea 
                         id="userInput" 
-                        placeholder="Mesajınızı yazın... (Markdown desteklenir)" 
+                        placeholder="Mesajınızı yazın... (Enter tuşu gönderir, Shift+Enter yeni satır)"
                         rows="1"
-                        onkeydown="handleKeyPress(event)"></textarea>
-                    <button class="send-button" onclick="sendMessage()">
+                        onkeydown="if(event.keyCode === 13 && !event.shiftKey) { event.preventDefault(); ChatManager.sendMessage(); }"
+                    ></textarea>
+                    <button class="send-button" onclick="ChatManager.sendMessage()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -573,265 +398,278 @@
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://unpkg.com/tippy.js@6"></script>
     <script>
-        // Temel değişkenler
-        const md = window.markdownit();
-        let conversationHistory = [];
-        let currentConversationIndex = 0;
-        let isDarkTheme = true;
-        let contextWindow = []; // Konuşma bağlamını tutmak için
+        const ChatManager = {
+            conversations: [],
+            currentIndex: 0,
+            contextWindow: [],
+            maxContextLength: 10,
 
-        // Sayfa yüklendiğinde
-        document.addEventListener('DOMContentLoaded', () => {
-            loadHistory();
-            initializeTooltips();
-            setupTextarea();
+            async sendMessage() {
+                const userInput = document.getElementById('userInput');
+                const message = userInput.value.trim();
+                
+                if (!message) return;
+
+                this.addMessage('user', message);
+                this.updateContext('user', message);
+                userInput.value = '';
+
+                document.getElementById('typingIndicator').style.display = 'flex';
+
+                try {
+                    const response = await this.makeApiRequest(message);
+                    
+                    if (response && response.successful === "success") {
+                        this.addMessage('ai', response.response);
+                        this.updateContext('ai', response.response);
+                    } else {
+                        throw new Error('API yanıt hatası');
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.addMessage('ai', 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.');
+                } finally {
+                    document.getElementById('typingIndicator').style.display = 'none';
+                }
+            },
+
+            async makeApiRequest(prompt) {
+                const contextualPrompt = this.constructContextualPrompt(prompt);
+                const encodedPrompt = encodeURIComponent(contextualPrompt);
+                const url = `https://darkness.ashlynn.workers.dev/chat/?prompt=${encodedPrompt}&model=meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo`;
+                
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            },
+
+            constructContextualPrompt(currentPrompt) {
+                let contextString = this.contextWindow
+                    .map(ctx => `${ctx.role === 'user' ? 'Kullanıcı' : 'AI'}: ${ctx.content}`)
+                    .join('\n');
+                
+                return `Önceki konuşma bağlamı:\n${contextString}\n\nKullanıcı: ${currentPrompt}\nAI:`;
+            },
+
+            updateContext(role, content) {
+                this.contextWindow.push({ role, content });
+                if (this.contextWindow.length > this.maxContextLength) {
+                    this.contextWindow.shift();
+                }
+            },
+
+            addMessage(sender, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}-message`;
+                
+                // Detect code blocks and format them
+                const formattedContent = this.formatMessageContent(content);
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        ${sender === 'user' ? '👤' : '🤖'}
+                    </div>
+                    <div class="message-content">
+                        ${formattedContent}
+                        ${sender === 'ai' ? this.createMessageActions() : ''}
+                    </div>
+                `;
+
+                document.getElementById('chatContainer').appendChild(messageDiv);
+                messageDiv.scrollIntoView({ behavior: 'smooth' });
+
+                // Initialize syntax highlighting for code blocks
+                messageDiv.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
+
+                if (!this.conversations[this.currentIndex]) {
+                    this.conversations[this.currentIndex] = [];
+                }
+                this.conversations[this.currentIndex].push({ sender, content });
+                this.updateChatHistory();
+
+                const textarea = document.getElementById('userInput');
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+            },
+
+            formatMessageContent(content) {
+                // Kod bloklarını tespit et ve formatla
+                const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+                let formattedContent = content.replace(codeBlockRegex, (match, language, code) => {
+                    return `
+                        <div class="code-block">
+                            ${language ? `<div class="language-label">${language}</div>` : ''}
+                            <button class="copy-code-button" onclick="ChatManager.copyCode(this)">
+                                <i class="fas fa-copy"></i> Kopyala
+                            </button>
+                            <pre><code class="${language || ''}">${this.escapeHtml(code.trim())}</code></pre>
+                        </div>
+                    `;
+                });
+
+                // Diğer markdown benzeri formatlamalar
+                formattedContent = formattedContent
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    .replace(/\n/g, '<br>');
+
+                return formattedContent;
+            },
+
+            createMessageActions() {
+                return `
+                    <div class="message-actions">
+                        <button class="message-action-button" onclick="ChatManager.copyMessage(this)">
+                            <i class="fas fa-copy"></i> Mesajı Kopyala
+                        </button>
+                        <button class="message-action-button" onclick="ChatManager.copyCodeBlocks(this)">
+                            <i class="fas fa-code"></i> Kodu Kopyala
+                        </button>
+                        <button class="message-action-button" onclick="ChatManager.shareMessage(this)">
+                            <i class="fas fa-share"></i> Paylaş
+                        </button>
+                        <button class="message-action-button" onclick="ChatManager.regenerateResponse(this)">
+                            <i class="fas fa-redo"></i> Yeniden Yaz
+                        </button>
+                    </div>
+                `;
+            },
+
+            escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            },
+
+            async copyCode(button) {
+                const codeBlock = button.parentElement.querySelector('code');
+                await navigator.clipboard.writeText(codeBlock.textContent);
+                this.showToast('Kod kopyalandı!');
+            },
+
+            async copyMessage(button) {
+                const messageContent = button.closest('.message-content');
+                const textContent = messageContent.textContent.replace(/Mesajı KopyalaKodu KopyalaPaylaşYeniden Yaz/g, '').trim();
+                await navigator.clipboard.writeText(textContent);
+                this.showToast('Mesaj kopyalandı!');
+            },
+
+            async copyCodeBlocks(button) {
+                const messageContent = button.closest('.message-content');
+                const codeBlocks = messageContent.querySelectorAll('code');
+                const allCode = Array.from(codeBlocks).map(block => block.textContent).join('\n\n');
+                await navigator.clipboard.writeText(allCode);
+                this.showToast('Tüm kodlar kopyalandı!');
+            },
+
+            shareMessage(button) {
+                const messageContent = button.closest('.message-content');
+                const text = messageContent.textContent.replace(/Mesajı KopyalaKodu KopyalaPaylaşYeniden Yaz/g, '').trim();
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'AI Assistant Yanıtı',
+                        text: text
+                    }).catch(console.error);
+                } else {
+                    this.copyMessage(button);
+                }
+            },
+
+            regenerateResponse(button) {
+                const messageElement = button.closest('.message');
+                const previousMessage = messageElement.previousElementSibling;
+                if (previousMessage && previousMessage.classList.contains('user-message')) {
+                    const userMessage = previousMessage.querySelector('.message-content').textContent.trim();
+                    messageElement.remove();
+                    this.sendMessage(userMessage);
+                }
+            },
+
+            showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+
+            startNewChat() {
+                this.currentIndex = this.conversations.length;
+                this.contextWindow = [];
+                document.getElementById('chatContainer').innerHTML = '';
+                this.updateChatHistory();
+            },
+
+            updateChatHistory() {
+                const historyContainer = document.getElementById('chatHistory');
+                historyContainer.innerHTML = '';
+
+                this.conversations.forEach((chat, index) => {
+                    const chatButton = document.createElement('button');
+                    chatButton.className = `chat-history-item ${index === this.currentIndex ? 'active' : ''}`;
+                    
+                    const title = chat[0]?.content || `Sohbet ${index + 1}`;
+                    const shortTitle = title.length > 30 ? title.substring(0, 30) + '...' : title;
+
+                    chatButton.innerHTML = `
+                        <i class="fas fa-comments"></i>
+                        <span>${shortTitle}</span>
+                    `;
+                    chatButton.onclick = () => this.loadChat(index);
+                    historyContainer.appendChild(chatButton);
+                });
+            },
+
+            loadChat(index) {
+                this.currentIndex = index;
+                this.contextWindow = [];
+                const chatContainer = document.getElementById('chatContainer');
+                chatContainer.innerHTML = '';
+
+                this.conversations[index].forEach(msg => {
+                    this.addMessage(msg.sender, msg.content);
+                    this.updateContext(msg.sender, msg.content);
+                });
+            }
+        };
+
+        // Textarea auto-resize
+        document.getElementById('userInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
         });
 
-        // Sohbet gönderme ve API entegrasyonu
-        async function sendMessage() {
-            const userInput = document.getElementById('userInput');
-            const message = userInput.value.trim();
-            
-            if (!message) return;
-
-            // Kullanıcı mesajını ekle
-            addMessage('user', message);
-            userInput.value = '';
-            adjustTextarea(userInput);
-
-            // Bağlam penceresini güncelle
-            updateContext(message, 'user');
-
-            // Typing göstergesi
-            document.getElementById('typingIndicator').style.display = 'flex';
-
-            try {
-                // API isteği için tam bağlamı oluştur
-                const contextPrompt = constructContextPrompt();
-                const apiUrl = `https://darkness.ashlynn.workers.dev/chat/?prompt=${encodeURIComponent(contextPrompt)}&model=meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo`;
-
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                if (data.successful === "success") {
-                    const aiResponse = data.response;
-                    addMessage('ai', aiResponse);
-                    updateContext(aiResponse, 'ai');
-                } else {
-                    throw new Error('API yanıt hatası');
-                }
-            } catch (error) {
-                showNotification('Bir hata oluştu. Lütfen tekrar deneyin.', 'error');
-                addMessage('ai', 'Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.');
-            }
-
-            document.getElementById('typingIndicator').style.display = 'none';
-            saveHistory();
-        }
-
-        // Bağlam yönetimi
-        function updateContext(message, sender) {
-            contextWindow.push({ role: sender, content: message });
-            if (contextWindow.length > 10) { // Son 10 mesajı tut
-                contextWindow.shift();
-            }
-        }
-
-        function constructContextPrompt() {
-            let contextPrompt = "Previous conversation:\n";
-            contextWindow.forEach(msg => {
-                contextPrompt += `${msg.role}: ${msg.content}\n`;
-            });
-            return contextPrompt;
-        }
-
-        // Mesaj ekleme ve formatlama
-        function addMessage(sender, content) {
-            const chatContainer = document.getElementById('chatContainer');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message animate__animated animate__fadeIn`;
-
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.innerHTML = sender === 'user' ? '👤' : '🤖';
-
-            const messageContent = document.createElement('div');
-            messageContent.className = 'message-content';
-            
-            // Markdown ve kod vurgulama
-            const formattedContent = md.render(content);
-            messageContent.innerHTML = formattedContent;
-
-            const actions = document.createElement('div');
-            actions.className = 'message-actions';
-            actions.innerHTML = `
-                <button class="message-action-button" onclick="copyMessage(this)">
-                    <i class="fas fa-copy"></i>
-                </button>
-                <button class="message-action-button" onclick="speakMessage(this)">
-                    <i class="fas fa-volume-up"></i>
-                </button>
-            `;
-
-            messageDiv.appendChild(avatar);
-            messageDiv.appendChild(messageContent);
-            messageDiv.appendChild(actions);
-            chatContainer.appendChild(messageDiv);
-
-            // Kod bloklarını işle
-            messageDiv.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightBlock(block);
-                addCopyButton(block);
-            });
-
-            // Sohbet geçmişini güncelle
-            if (!conversationHistory[currentConversationIndex]) {
-                conversationHistory[currentConversationIndex] = [];
-            }
-            conversationHistory[currentConversationIndex].push({
-                sender,
-                content,
-                timestamp: new Date().toISOString()
-            });
-
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Sohbet içe/dışa aktarma
-        function exportChat() {
-            const chat = conversationHistory[currentConversationIndex];
-            const chatExport = {
-                version: '1.0',
-                timestamp: new Date().toISOString(),
-                messages: chat
-            };
-            
-            const blob = new Blob([JSON.stringify(chatExport, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `chat-export-${new Date().toISOString()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            showNotification('Sohbet başarıyla dışa aktarıldı!', 'success');
-        }
-
-        function importChat() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = async (e) => {
-                try {
-                    const file = e.target.files[0];
-                    const text = await file.text();
-                    const imported = JSON.parse(text);
-                    
-                    if (imported.version && imported.messages) {
-                        conversationHistory.push(imported.messages);
-                        currentConversationIndex = conversationHistory.length - 1;
-                        saveHistory();
-                        loadConversation(currentConversationIndex);
-                        showNotification('Sohbet başarıyla içe aktarıldı!', 'success');
-                    } else {
-                        throw new Error('Geçersiz dosya formatı');
-                    }
-                } catch (error) {
-                    showNotification('Sohbet içe aktarılamadı!', 'error');
-                }
-            };
-            input.click();
-        }
-
-        // Yardımcı fonksiyonlar
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type} animate__animated animate__slideInRight`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.classList.remove('animate__slideInRight');
-                notification.classList.add('animate__slideOutRight');
-                setTimeout(() => notification.remove(), 500);
-            }, 3000);
-        }
-
-        function copyMessage(button) {
-            const message = button.closest('.message').querySelector('.message-content').textContent;
-            navigator.clipboard.writeText(message);
-            showNotification('Mesaj kopyalandı!', 'success');
-        }
-
-        function speakMessage(button) {
-            const message = button.closest('.message').querySelector('.message-content').textContent;
-            const utterance = new SpeechSynthesisUtterance(message);
-            utterance.lang = 'tr-TR';
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // LocalStorage işlemleri
-        function saveHistory() {
-            localStorage.setItem('chatHistory', JSON.stringify(conversationHistory));
-            localStorage.setItem('currentIndex', currentConversationIndex.toString());
-            displayConversationHistory();
-        }
-
-        function loadHistory() {
-            const saved = localStorage.getItem('chatHistory');
-            const savedIndex = localStorage.getItem('currentIndex');
-            
-            if (saved) {
-                conversationHistory = JSON.parse(saved);
-                currentConversationIndex = savedIndex ? parseInt(savedIndex) : 0;
-                displayConversationHistory();
-                loadConversation(currentConversationIndex);
-            }
-        }
-
-        // UI yardımcı fonksiyonları
-        function adjustTextarea(textarea) {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
-        }
-
-        function setupTextarea() {
-            const textarea = document.getElementById('userInput');
-            textarea.addEventListener('input', () => adjustTextarea(textarea));
-        }
-
-        function initializeTooltips() {
-            tippy('[data-tippy-content]', {
-                placement: 'top',
-                animation: 'scale',
-                duration: 200
-            });
-        }
-
+        // Mobile sidebar toggle
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('active');
         }
 
-        function toggleTheme() {
-            isDarkTheme = !isDarkTheme;
-            document.body.classList.toggle('light-theme');
-            showNotification(`${isDarkTheme ? 'Koyu' : 'Açık'} tema aktif`, 'success');
-        }
-
-        // Klavye kısayolları
-        function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
+        // Load saved conversations
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedConversations = localStorage.getItem('conversations');
+            if (savedConversations) {
+                ChatManager.conversations = JSON.parse(savedConversations);
+                ChatManager.updateChatHistory();
+                
+                if (ChatManager.conversations.length > 0) {
+                    ChatManager.loadChat(ChatManager.conversations.length - 1);
+                }
             }
-        }
+        });
 
-        // Event Listeners
-        document.querySelector('.new-chat').addEventListener('click', startNewChat);
+        // Save conversations before unload
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('conversations', JSON.stringify(ChatManager.conversations));
+        });
     </script>
 </body>
 </html>
