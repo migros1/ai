@@ -1,20 +1,537 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sürdürülebilirlik Sohbeti</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Mixtral AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background: #0f0f1a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 140, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 40%);
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .header h1::before, .header h1::after {
+            content: '⬢';
+            color: #00b4db;
+            font-size: 1.2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .language-indicator {
+            position: absolute;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .language-indicator:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .prompt-suggestions {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .prompt-suggestions::-webkit-scrollbar {
+            display: none;
+        }
+
+        .suggestion-chip {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+        }
+
+        .suggestion-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            min-height: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-history {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        .chat-history h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .chat-history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .chat-history-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-history-item:last-child {
+            border-bottom: none;
+        }
+
+        .chat-history-item .message-preview {
+            flex: 1;
+            font-size: 14px;
+            color: #a8a8a8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-history-item .message-time {
+            font-size: 12px;
+            color: #a8a8a8;
+        }
+
+        .message {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease-in-out;
+            line-height: 1.6;
+            position: relative;
+            font-size: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            margin-left: auto;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, #16222A 0%, #3A6073 100%);
+            margin-right: auto;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .message-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .message:hover .message-controls {
+            opacity: 1;
+        }
+
+        .message-control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .message-control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .input-container {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            bottom: 20px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #message-input:focus {
+            border-color: rgba(0, 180, 219, 0.5);
+            box-shadow: 0 0 15px rgba(0, 180, 219, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        #send-button {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 180, 219, 0.4);
+        }
+
+        #send-button:disabled {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px 20px;
+            color: #a8a8a8;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: pulse 1.5s infinite;
+        }
+
+        .system-message {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a8a8a8;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .message {
+                max-width: 90%;
+                padding: 15px;
+            }
+
+            #send-button {
+                padding: 18px;
+            }
+
+            .language-indicator {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+
+            .suggestion-chip {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+
+            .chat-history {
+                padding: 10px;
+            }
+
+            .chat-history h3 {
+                font-size: 14px;
+            }
+
+            .chat-history-item .message-preview {
+                font-size: 13px;
+            }
+
+            .chat-history-item .message-time {
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h1>Sürdürülebilirlik Sohbeti</h1>
-        <button id="theme-toggle">Tema Değiştir</button>
-        <div id="chat-box" class="chat-box"></div>
-        <div id="loading-indicator" class="loading-indicator" style="display: none;">Yanıt Bekleniyor...</div>
-        <input type="text" id="user-input" placeholder="Mesajınızı yazın..." />
-        <button id="send-button">Gönder</button>
+    <div class="header">
+        <h1>MIXTRAL AI</h1>
+        <div class="language-indicator">
+            <i class="fas fa-language"></i>
+            <span id="current-lang">TR</span>
+        </div>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>
+    <div class="container">
+        <div class="chat-history">
+            <h3>Geçmiş Konuşmalar</h3>
+            <div class="chat-history-container" id="chat-history-container">
+                <!-- Geçmiş konuşmalar burada listelenecek -->
+            </div>
+        </div>
+        <div class="prompt-suggestions">
+            <div class="suggestion-chip">Python kod örneği göster</div>
+            <div class="suggestion-chip">Yapay zeka nedir?</div>
+            <div class="suggestion-chip">Bir hikaye anlat</div>
+            <div class="suggestion-chip">Matematik problemi çöz</div>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <div class="message bot-message">
+                Merhaba! Size nasıl yardımcı olabilirim?
+                <div class="message-controls">
+                    <button class="message-control-btn">
+                        <i class="fas fa-copy"></i> Kopyala
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="typing-indicator" id="typing-indicator">
+            <i class="fas fa-robot"></i> AI yanıt oluşturuyor...
+        </div>
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Mesajınızı yazın...">
+            <button id="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatHistoryContainer = document.getElementById('chat-history-container');
+        let chatHistory = [];
+
+        Tamam, devam ediyorum:
+
+```javascript
+function addToHistory(message, sender) {
+    const historyItem = {
+        message: message,
+        sender: sender,
+        timestamp: new Date().getTime()
+    };
+    chatHistory.push(historyItem);
+    updateChatHistory();
+}
+
+function updateChatHistory() {
+    chatHistoryContainer.innerHTML = '';
+    chatHistory.forEach(item => {
+        const historyItemDiv = document.createElement('div');
+        historyItemDiv.className = 'chat-history-item';
+        historyItemDiv.onclick = () => {
+            messageInput.value = item.message;
+            messageInput.focus();
+        };
+
+        historyItemDiv.innerHTML = `
+            <div class="message-preview">${item.message}</div>
+            <div class="message-time">${new Date(item.timestamp).toLocaleTimeString('tr-TR')}</div>
+        `;
+        chatHistoryContainer.appendChild(historyItemDiv);
+    });
+}
+
+async function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    messageInput.value = '';
+    sendButton.disabled = true;
+    appendMessage(message, 'user');
+    addToHistory(message, 'user');
+    typingIndicator.style.display = 'block';
+
+    try {
+        const preparedPrompt = preparePrompt(message);
+        const response = await fetch(`${API_URL}?prompt=${encodeURIComponent(preparedPrompt)}&model=${encodeURIComponent(MODEL)}`);
+        
+        if (!response.ok) {
+            throw new Error('API yanıt vermedi');
+        }
+
+        const data = await response.json();
+        appendMessage(data.response, 'bot');
+        addToHistory(data.response, 'bot');
+    } catch (error) {
+        console.error('Error:', error);
+        appendMessage('Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.', 'bot');
+        addToHistory('Üzgünüm, bir hata oluştu. Lütfen tekrar deneyin.', 'bot');
+    } finally {
+        typingIndicator.style.display = 'none';
+        sendButton.disabled = false;
+        messageInput.focus();
+    }
+}
+
+function copyMessage(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const systemMessage = document.createElement('div');
+        systemMessage.className = 'system-message';
+        systemMessage.textContent = 'Mesaj kopyalandı!';
+        chatContainer.appendChild(systemMessage);
+        setTimeout(() => systemMessage.remove(), 2000);
+    });
+}
+
+function appendMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+    messageDiv.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+    
+    messageDiv.innerHTML = `
+        ${message}
+        <div class="message-controls">
+            <button class="message-control-btn" onclick="copyMessage(this.parentElement.parentElement.textContent.trim())">
+                <i class="fas fa-copy"></i> Kopyala
+            </button>
+        </div>
+    `;
+    
+    chatContainer.appendChild(messageDiv);
+    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+suggestionChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+        messageInput.value = chip.textContent;
+        messageInput.focus();
+    });
+});
+
+sendButton.addEventListener('click', sendMessage);
+
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+messageInput.addEventListener('input', () => {
+    sendButton.disabled = messageInput.value.trim() === '';
+});
+
+messageInput.focus();
