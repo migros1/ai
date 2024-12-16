@@ -3,49 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cursor AI Key Generator</title>
+    <title>Random Key Generator</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
         .container {
-            background-color: #ffffff;
+            background-color: #1e1e1e;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             padding: 20px;
             width: 80%;
             max-width: 600px;
             text-align: center;
+            margin-top: 20px;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #1f85de;
             color: white;
             border: none;
             padding: 15px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
             font-size: 16px;
             margin: 20px 0;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #0f4c75;
         }
-        pre {
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
+        pre, code {
+            background-color: #252525;
+            border: 1px solid #333;
             border-radius: 5px;
             padding: 10px;
             text-align: left;
             overflow-x: auto;
+            max-height: 200px;
+        }
+        .instructions {
+            text-align: left;
+            margin-top: 20px;
+        }
+        h2 {
+            color: #1f85de;
         }
     </style>
     <script>
@@ -77,9 +85,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>Cursor AI Key</h1>
+        <h1>Random Key Generator</h1>
         <button onclick="generateCustomRandomKey()">Generate Key</button>
         <pre id="output"></pre>
+    </div>
+    <div class="container instructions">
+        <h2>Installation Instructions</h2>
+        <ol>
+            <li>Setup Cursor AI free trial, stay signed in</li>
+            <li>Close Cursor completely</li>
+            <li>Navigate to the configuration file location:
+                <ul>
+                    <li>Windows: <code>%APPDATA%\Cursor\User\globalStorage\storage.json</code></li>
+                    <li>macOS: <code>~/Library/Application Support/Cursor/User/globalStorage/storage.json</code></li>
+                    <li>Linux: <code>~/.config/Cursor/User/globalStorage/storage.json</code></li>
+                </ul>
+            </li>
+            <li>Create a backup of <code>storage.json</code></li>
+            <li>Edit <code>storage.json</code> and update these fields with your new key:
+                <pre><code>{
+    "telemetry.machineId": "ee7d0359-5eb3-4d02-a36b-1dc961afb783",
+    "telemetry.macMachineId": "ee7d0359-5eb3-4d02-a36b-1dc961afb783",
+    "telemetry.devDeviceId": "ee7d0359-5eb3-4d02-a36b-1dc961afb783",
+    "telemetry.sqmId": "ee7d0359-5eb3-4d02-a36b-1dc961afb783",
+    "lastModified": "2024-01-01T00:00:00.000Z",
+    "version": "1.0.1"
+}</code></pre>
+            </li>
+            <li>Save the file and restart Cursor</li>
+        </ol>
     </div>
 </body>
 </html>
